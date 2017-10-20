@@ -1,0 +1,279 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>O Monstro das Cavernas</title>
+</head>
+	<body onLoad='init()' onKeyDown='entrada(window.event.keyCode)'>
+		<hr>
+		<center><h1>O Monstro das cavernas - Vem Monstro The Game</h1></center>
+		<hr>
+		<br><h2>Para movimentar o MONSTRO use W/A/S/D<br>
+				Tem que bater com cabeça do MONSTRO nas coisas pra ele pegar ! </h2>
+		<br>
+		<canvas id="meuCanvas" width=600 height=600 style="border:1px solid black;background:white">
+			Seu navegador não suporta este recurso
+	
+	
+		</canvas><br>
+		<button type="button" onclick="trilha_playPause()">Play/Pause</button>
+		<button type="button" onclick="trilha_aumentaSom()">+ som</button>
+		<button type="button" onclick="trilha_diminuiSom()">- som</button><br>
+		<audio id='trilha' autoplay="autoplay" loop="loop">
+			<source src="Bonde da Maromba.mp3" type="audio/mpeg">
+			Your browser does not support the audio element.
+		</audio>
+	</body>
+<script Language="JavaScript">
+
+	s1frame = 0;
+	var player = {
+		altura:144.75,
+		largura:107.5,
+		posx:100,
+		posy:100,
+		csprite:new Image(),
+		pwhey:0,
+		pmalto:0,
+		pgluta:0,
+		poutrasparadas:0,
+		pfrango:0,
+		pbatatadoce:0,
+		monstraopoints:0
+	};
+	var whey = {
+		altura:120,
+		largura:77,
+		csprite:new Image(),
+		pontos:3
+	};
+	var malto = {
+		altura:100,
+		largura:67,
+		csprite:new Image(),
+		pontos:2
+	};
+	var gluta = {
+		altura:100,
+		largura:79,
+		csprite:new Image(),
+		pontos:3
+	};
+	var outrasparadas = {
+		altura:120,
+		largura:103,
+		csprite:new Image(),
+		pontos:30
+	};
+	var batatadoce = {
+		altura:100,
+		largura:73,
+		csprite:new Image(),
+		pontos:5
+	};
+	var frango = {
+		altura:100,
+		largura:100,
+		csprite:new Image(),
+		pontos:10
+	};
+	var itemAux = 0;
+	var itemAux2 = '';
+	var itemActive = 0;
+	var randPos = [0,0];
+	var itemSize = [0,0];
+	var sx = [0,107.5,215,322.5];
+	var sy = [0,144.75,289.5,434.25];
+	var crop = [0,0];
+	var animst = 0;
+	player.csprite.src = 'mainchar.png';
+	whey.csprite.src = 'whey.png';
+	malto.csprite.src = 'malto.png';
+	gluta.csprite.src = 'gluta.png';
+	outrasparadas.csprite.src = 'outrasparadas.png';
+	batatadoce.csprite.src = 'batatadoce.png';
+	frango.csprite.src = 'frango.png';
+	function init(){
+		canvas = document.getElementById("meuCanvas");
+		ctx = canvas.getContext("2d");
+		setInterval( update, 50);
+
+
+	}
+	//Executado +- 30 vezes por segundo
+	function update(){
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+		ctx.font="20px Georgia";
+		itemSort(itemAux);
+		ctx.fillText("Whey : " + player.pwhey,420,50);
+		ctx.fillText("Malto : " + player.pmalto,420,68);
+		ctx.fillText("Gluta : " + player.pgluta,420,83);
+		ctx.fillText("Batata Doce : " + player.pbatatadoce,420,100);
+		ctx.fillText("Frango : " + player.pfrango,420,115);
+		ctx.fillText("Outras paradas : " + player.poutrasparadas,420,130);
+		ctx.fillText("Monstrão Points : " + player.monstraopoints,300,20);
+
+		ctx.drawImage(player.csprite,crop[0],crop[1],player.largura,player.altura,player.posx,player.posy,player.largura,player.altura);
+		if(player.posx + 35 > randPos[0] && player.posx + 75< randPos[0] + itemSize[0] && player.posy  + 5 > randPos[1] && player.posy + 45 < randPos[1] + itemSize[1]){
+			creditar(itemActive);
+			itemActive = 0;
+			randPos[0] = Math.floor((Math.random() * 480) + 50);
+			randPos[1] = Math.floor((Math.random() * 480) + 50);
+			itemAux = Math.floor((Math.random() * 50) + 1);
+		}
+		if(itemActive != 0){
+			itemSpawn(itemActive);
+			ctx.drawImage(itemAux2,randPos[0],randPos[1]);
+		}
+	}
+		
+		
+		
+	//Direções Movimentos
+	function entrada(direction){
+
+		if(itemActive == 0){
+			randPos[0] = Math.floor((Math.random() * 480) + 50);
+			randPos[1] = Math.floor((Math.random() * 480) + 50);
+			itemAux = Math.floor((Math.random() * 50) + 1);
+		}
+		//Cima = 87 - 38 | Baixo = 83 - 40
+		if(direction == 87){
+			player.posy = player.posy - 10;
+			animst = animst + 1;
+			if(animst > 3){
+			animst = 0
+			}
+			crop[0] = sx[animst];
+			crop[1] = sy[3];
+		}
+		if(direction == 83){
+			player.posy = player.posy + 10;
+			animst = animst + 1;
+			if(animst > 3){
+			animst = 0
+			}
+			crop[0] = sx[animst];
+			crop[1] = sy[0];
+		}
+		//Esquerda = 65 - 37 | Direita = 68 - 39
+		if(direction == 65){
+			player.posx = player.posx - 10;
+			animst = animst + 1;
+			if(animst > 3){
+			animst = 0
+			}
+			crop[0] = sx[animst];
+			crop[1] = sy[1];
+		}
+		if(direction == 68){
+			player.posx = player.posx + 10;
+			animst = animst + 1;
+			if(animst > 3){
+			animst = 0
+			}
+			crop[0] = sx[animst];
+			crop[1] = sy[2];
+		}
+	}
+	function creditar(item){
+		if(item == 1){
+		player.pwhey += 1;
+		player.monstraopoints += whey.pontos;
+		}
+		if(item == 2){
+		player.pmalto += 1;
+		player.monstraopoints += malto.pontos;
+		}
+		if(item == 3){
+		player.pgluta += 1;
+		player.monstraopoints += gluta.pontos;
+		}
+		if(item == 4){
+		player.pbatatadoce += 1;
+		player.monstraopoints += batatadoce.pontos;
+		}
+		if(item == 5 || item == 6){
+		player.pfrango += 1;
+		player.monstraopoints += frango.pontos;
+		}
+		if(item == 7){
+		player.poutrasparadas += 1;
+		player.monstraopoints += outrasparadas.pontos;
+		}
+		
+	}
+	function itemSort(randomico){
+		if(randomico > 0 && randomico < 15){
+			itemActive = 1;
+		}
+		if(randomico > 14 && randomico < 28){
+			itemActive = 2;
+		}
+		if(randomico > 27 && randomico < 34){
+			itemActive = 3;
+		}
+		if(randomico > 33 && randomico < 40){
+			itemActive = 4;
+		}
+		if(randomico > 39 && randomico < 45){
+			itemActive = 5;
+		}
+		if(randomico > 44 && randomico < 50){
+			itemActive = 6;
+		}
+		if(randomico == 50){
+			itemActive = 7;
+		}
+	};
+	function itemSpawn(item){
+		if(item == 1){
+			itemAux2 = whey.csprite;
+			itemSize[0] = whey.largura;
+			itemSize[1] = whey.altura;
+		}
+		if(item == 2){
+			itemAux2 = malto.csprite;
+			itemSize[0] = malto.largura;
+			itemSize[1] = malto.altura;
+		}
+		if(item == 3){
+			itemAux2 = gluta.csprite;
+			itemSize[0] = gluta.largura;
+			itemSize[1] = gluta.altura;
+		}
+		if(item == 4){
+			itemAux2 = batatadoce.csprite;
+			itemSize[0] = batatadoce.largura;
+			itemSize[1] = batatadoce.altura;
+		}
+		if(item == 5 || item == 6){
+			itemAux2 = frango.csprite;
+			itemSize[0] = frango.largura;
+			itemSize[1] = frango.altura;
+		}
+		if(item == 7){
+			itemAux2 = outrasparadas.csprite;
+			itemSize[0] = whey.largura;
+			itemSize[1] = whey.altura;
+		}
+	};
+	function trilha_playPause() {
+	var myAudio = document.getElementById("trilha");
+		if (myAudio.paused) {
+		myAudio.play();
+		}else{
+		myAudio.pause();
+		}
+	};
+	function trilha_aumentaSom() {
+	var myAudio = document.getElementById("trilha");
+		myAudio.volume += 0.1;
+	};
+	function trilha_diminuiSom() {
+	var myAudio = document.getElementById("trilha");
+		myAudio.volume -= 0.1;
+	};
+	</script>
+</html>
